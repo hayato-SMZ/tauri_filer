@@ -1,11 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::fmt::format;
+use filesystem_wrapper::fs::DirEntryInfo;
 use tauri::Manager;
-use tauri::Window;
-// filesystemWrapperを使う
-mod filesystemWrapper;
+mod filesystem_wrapper;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -14,21 +12,13 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn rootdir(path: &str) -> Vec<String> {
-    let result = filesystemWrapper::fs::get_dir_entries(path.to_string());
+fn rootdir(path: &str) -> Result<Vec<DirEntryInfo>, String> {
+    let result = filesystem_wrapper::fs::get_dir_entries(path.to_string());
+    println!("{:?}", result.is_ok());
     if result.is_err() {
-        let errMessage = format!("{:?}", result.err().unwrap());
-        let mut messages = Vec::new();
-        messages.push(errMessage);
-        return messages;
+        Err(result.err().unwrap())
     } else {
-        let resultItems = result.unwrap();
-        // resultItemsをStringのVecに変換
-        let mut resultItemsString = Vec::new();
-        for item in resultItems {
-            resultItemsString.push(format!("{:?}", item.file_name()));
-        }
-        return resultItemsString;
+        Ok(result.unwrap())
     }
 }
 
