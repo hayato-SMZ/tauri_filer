@@ -6,8 +6,9 @@ import Greet from "./components/Greet.vue";
 
 <template>
   <v-app>
+    <v-main>
       <Greet />
-
+    </v-main>
   </v-app>
 </template>
 
