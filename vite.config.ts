@@ -1,10 +1,16 @@
 import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";;
+
+import vue from "@vitejs/plugin-vue";
+import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [vue()],
-
+  plugins: [
+    vue(),
+    vuetify({
+      autoImport: true,
+    }),
+  ],
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors
@@ -13,5 +19,5 @@ export default defineConfig(async () => ({
   server: {
     port: 1420,
     strictPort: true,
-  }
+  },
 }));
