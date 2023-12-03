@@ -6,6 +6,10 @@ export const useFileSelectorStore = defineStore("fileSelector", {
     cursor: 0,
     windowFileCount: 1,
   }),
+  getters: {
+    getWindw: (state) => state.cursorwindw,
+    getCursor: (state) => state.cursor,
+  },
   actions: {
     // cursorをアップ（上に移動）
     upCursor() {
@@ -15,6 +19,7 @@ export const useFileSelectorStore = defineStore("fileSelector", {
     },
     // cursorをダウン（下に移動）
     downCursor() {
+      console.log(this.cursor);
       if (this.cursor < this.windowFileCount - 1) {
         this.cursor++;
       }
@@ -26,6 +31,9 @@ export const useFileSelectorStore = defineStore("fileSelector", {
       if (this.cursor > fileCount - 1) {
         this.cursor = fileCount - 1;
       }
+    },
+    setFileCounter(fileLists: number) {
+      this.windowFileCount = fileLists;
     },
   },
 });
