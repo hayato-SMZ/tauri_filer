@@ -37,6 +37,7 @@ onMounted(() => {
 const goparent = () => {
   path.value = path.value.slice(0, path.value.lastIndexOf("/"));
 };
+
 </script>
 
 <template>
