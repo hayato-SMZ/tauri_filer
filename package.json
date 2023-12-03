@@ -10,8 +10,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.5.1",
     "@mdi/font": "^7.3.67",
+    "@tauri-apps/api": "^1.5.1",
+    "pinia": "^2.1.7",
     "vue": "^3.3.4",
     "vuetify": "^3.4.4"
   },
@@ -22,7 +23,7 @@
     "sass-loader": "^13.3.2",
     "typescript": "^5.0.2",
     "vite": "^4.4.4",
-    "vue-tsc": "^1.8.5",
-    "vite-plugin-vuetify": "^1.0.2"
+    "vite-plugin-vuetify": "^1.0.2",
+    "vue-tsc": "^1.8.5"
   }
 }
