@@ -25,7 +25,7 @@ const dirlist = () => {
       list.value = list.value.concat(
         res_item.filter((item: any) => !item.is_file) as any[]
       );
-      cursorStore.setFileCounter(list.value.length);
+      cursorStore.setFileCounter(props.windowid, list.value.length);
       console.log(list.value);
     })
     .catch((err: string) => {
@@ -45,7 +45,8 @@ const update = (e: any) => {
   path.value += "/" + e.target.innerText.replace(/\n|\/n/, "");
 };
 watch(path, dirlist);
-watch(cursorPosition, (newVal) => {
+watch(cursorPosition, () => {
+  if (cursorStore.getWindow != props.windowid) return;
   setTimeout(() => {
     const element = document.
     getElementsByClassName("cursor")[0];
@@ -76,8 +77,8 @@ const isCursor = (index: number) => {
 </script>
 
 <template>
-  <div>
-    <div>dir = <input v-model="path" /></div>
+  <div class="window">
+    <div>di = <input v-model="path" /></div>
     <button @click="dirlist">get</button>
     <v-card>
       <v-list density="compact" lines="one">
@@ -104,5 +105,9 @@ const isCursor = (index: number) => {
 <style lang="scss" scoped>
 .cursor {
   background-color: #999;
+}
+.window {
+  height: 70vh;
+  overflow: hidden;
 }
 </style>

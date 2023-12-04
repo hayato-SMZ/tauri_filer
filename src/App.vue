@@ -12,6 +12,11 @@ const keydown = (e: any) => {
     console.log(selecter.getCursor);
   } else if (e.key == "ArrowUp") {
     selecter.upCursor();
+  } else if (e.key == "ArrowRight") {
+    selecter.changeWindow(1);
+  } else if (e.key == "ArrowLeft") {
+    selecter.changeWindow(0);
+  
   } else if (e.key == "Enter") {
     console.log(selecter.cursor); // todo
   }
@@ -25,7 +30,7 @@ onMounted(() => {
 <template>
   <v-app>
     <v-main >
-      <v-container style="height: 70vh;overflow: hidden;">
+      <v-container>
         <v-row>
           <v-col>
             <FilerWindow :windowid="0"/>
@@ -37,7 +42,7 @@ onMounted(() => {
       </v-container>
     </v-main>
     <v-footer app>
-      <span class="text-center">&copy; 2021</span>
+      <span class="text-ceneeter">&copy; 2021</span>
     </v-footer>
   </v-app>
 </template>
