@@ -11,6 +11,8 @@ const props = defineProps({
   },
 });
 
+const selectedfiles = ref<number[]>([]);
+
 const cursorStore = useFileSelectorStore();
 
 const cursorPosition = computed(() => {
@@ -26,17 +28,31 @@ const dirlist = () => {
         res_item.filter((item: any) => !item.is_file) as any[]
       );
       cursorStore.setFileCounter(props.windowid, list.value.length);
-      console.log(list.value);
+      selectedfiles.value = [];
     })
     .catch((err: string) => {
       path.value = path.value.slice(0, path.value.lastIndexOf("/"));
       console.log(err);
     });
 };
+
 const list = ref<any[]>([]);
 const dir_list = computed(() => {
   return list.value.filter((item: any) => item.is_dir);
 });
+const key_select = (e: any) => {
+  console.log(e.key);
+  console.log(e.key == "", e.key == "Space")
+  if (e.key == "") {
+    if (selectedfiles.value.includes(cursorPosition.value)) {
+      selectedfiles.value = selectedfiles.value.filter( 
+        (item: number) => item != cursorPosition.value
+      );
+    } else {
+      selectedfiles.value.push(cursorPosition.value);
+    }
+  }
+};
 const file_list = computed(() => {
   return list.value.filter((item: any) => !item.is_dir);
 });
@@ -88,8 +104,9 @@ const isCursor = (index: number) => {
         <v-list-item
           v-for="(item, index) in dir_list"
           :key="item"
-          :class="isCursor(index + 1)"
+          :class="`${isCursor(index + 1)} ${selectedfiles.includes(index + 1) ? 'selected' : ''}`"
           @click="update"
+          @keydown="key_select"
           :prepend-icon="item.is_dir ? 'mdi-folder' : 'mdi-file'"
         >
           <v-list-item-content>{{ item.file_name }}</v-list-item-content>
@@ -104,8 +121,11 @@ const isCursor = (index: number) => {
 
 <style lang="scss" scoped>
 .cursor {
-  background-color: #999;
+  background-color: #c0c0c0;
 }
+.selected {
+  background-color: #c0c0c0;
+} 
 .window {
   height: 70vh;
   overflow: hidden;

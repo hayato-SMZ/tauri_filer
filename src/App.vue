@@ -6,19 +6,14 @@ import FilerWindow from "./components/FilerWindow.vue";
 import { useFileSelectorStore } from "./store/fileSelector";
 const selecter = useFileSelectorStore();
 const keydown = (e: any) => {
-  console.log(e.key);
   if (e.key == "ArrowDown") {
     selecter.downCursor();
-    console.log(selecter.getCursor);
   } else if (e.key == "ArrowUp") {
     selecter.upCursor();
   } else if (e.key == "ArrowRight") {
     selecter.changeWindow(1);
   } else if (e.key == "ArrowLeft") {
     selecter.changeWindow(0);
-  
-  } else if (e.key == "Enter") {
-    console.log(selecter.cursor); // todo
   }
 };
 
