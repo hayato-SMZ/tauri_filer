@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, defineProps } from "vue";
+import { ref, onMounted, watch, defineProps, defineExpose } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { computed } from "vue";
 import { useFileSelectorStore } from "../store/FileSelector";
@@ -40,18 +40,16 @@ const list = ref<any[]>([]);
 const dir_list = computed(() => {
   return list.value.filter((item: any) => item.is_dir);
 });
-const key_select = (e: any) => {
-  console.log(e.key);
-  console.log(e.key == "", e.key == "Space")
-  if (e.key == "") {
+const key_select = () => {
+  console.log("keydown: " + props.windowid + " " + cursorPosition.value )
     if (selectedfiles.value.includes(cursorPosition.value)) {
       selectedfiles.value = selectedfiles.value.filter( 
         (item: number) => item != cursorPosition.value
       );
     } else {
       selectedfiles.value.push(cursorPosition.value);
-    }
   }
+    console.log(selectedfiles.value);
 };
 const file_list = computed(() => {
   return list.value.filter((item: any) => !item.is_dir);
@@ -90,6 +88,13 @@ const isCursor = (index: number) => {
   }
   return cursorPosition.value == index ? "cursor" : "";
 };
+
+const isSelected = (index: number) => {
+  return selectedfiles.value.includes(index)? "selected" : "";
+};
+defineExpose({
+  key_select,
+});
 </script>
 
 <template>
@@ -104,7 +109,7 @@ const isCursor = (index: number) => {
         <v-list-item
           v-for="(item, index) in dir_list"
           :key="item"
-          :class="`${isCursor(index + 1)} ${selectedfiles.includes(index + 1) ? 'selected' : ''}`"
+          :class="`${isSelected(index + 1)} ${isCursor(index + 1)} `"
           @click="update"
           @keydown="key_select"
           :prepend-icon="item.is_dir ? 'mdi-folder' : 'mdi-file'"
@@ -120,12 +125,12 @@ const isCursor = (index: number) => {
 </template>
 
 <style lang="scss" scoped>
+.selected {
+  background-color: rgba(100, 255, 100, 0.3);
+} 
 .cursor {
   background-color: #c0c0c0;
 }
-.selected {
-  background-color: #c0c0c0;
-} 
 .window {
   height: 70vh;
   overflow: hidden;
