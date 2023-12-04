@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, defineProps } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { computed } from "vue";
 import { useFileSelectorStore } from "../store/FileSelector";
 
+const props = defineProps({
+  windowid: {
+    type: Number,
+    default: 0,
+  },
+});
+
 const cursorStore = useFileSelectorStore();
 
 const cursorPosition = computed(() => {
-  console.log(cursorStore.getCursor);
   return cursorStore.getCursor;
 });
 
@@ -39,6 +45,20 @@ const update = (e: any) => {
   path.value += "/" + e.target.innerText.replace(/\n|\/n/, "");
 };
 watch(path, dirlist);
+watch(cursorPosition, (newVal) => {
+  setTimeout(() => {
+    const element = document.
+    getElementsByClassName("cursor")[0];
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "start",
+      });
+    }
+  }, 10);
+
+});
 
 onMounted(() => {
   dirlist();
@@ -48,6 +68,9 @@ const goparent = () => {
 };
 
 const isCursor = (index: number) => {
+  if (cursorStore.getWindow != props.windowid) {
+    return "";
+  }
   return cursorPosition.value == index ? "cursor" : "";
 };
 </script>

@@ -7,13 +7,13 @@ export const useFileSelectorStore = defineStore("fileSelector", {
     windowFileCount: 1,
   }),
   getters: {
-    getWindw: (state) => state.cursorwindw,
+    getWindow: (state) => state.cursorwindw,
     getCursor: (state) => state.cursor,
   },
   actions: {
     // cursorをアップ（上に移動）
     upCursor() {
-      if (this.cursor > 1) {
+      if (this.cursor > 0) {
         this.cursor--;
       }
     },
