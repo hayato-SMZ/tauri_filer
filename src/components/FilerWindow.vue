@@ -41,29 +41,41 @@ const dir_list = computed(() => {
   return list.value.filter((item: any) => item.is_dir);
 });
 const key_select = () => {
-  console.log("keydown: " + props.windowid + " " + cursorPosition.value )
-    if (selectedfiles.value.includes(cursorPosition.value)) {
-      selectedfiles.value = selectedfiles.value.filter( 
-        (item: number) => item != cursorPosition.value
-      );
-    } else {
-      selectedfiles.value.push(cursorPosition.value);
+  console.log("keydown: " + props.windowid + " " + cursorPosition.value);
+  if (selectedfiles.value.includes(cursorPosition.value)) {
+    selectedfiles.value = selectedfiles.value.filter(
+      (item: number) => item != cursorPosition.value
+    );
+  } else {
+    selectedfiles.value.push(cursorPosition.value);
   }
-    console.log(selectedfiles.value);
+  console.log(selectedfiles.value);
 };
 const file_list = computed(() => {
   return list.value.filter((item: any) => !item.is_dir);
 });
 const path = ref("");
-const update = (e: any) => {
-  path.value += "/" + e.target.innerText.replace(/\n|\/n/, "");
+const update = () => {
+  if (cursorPosition.value == 0) {
+    cursorStore;
+    goparent();
+    return;
+  }
+  const item = list.value[cursorPosition.value - 1];
+  if (item.is_dir) {
+    path.value += "/" + item.file_name.replace(/\n|\/n/, "");
+    cursorStore.resetCursor();
+
+    // dirlist();
+  } else {
+    invoke("openfile", { path: path.value + "/" + item.file_name });
+  }
 };
 watch(path, dirlist);
 watch(cursorPosition, () => {
   if (cursorStore.getWindow != props.windowid) return;
   setTimeout(() => {
-    const element = document.
-    getElementsByClassName("cursor")[0];
+    const element = document.getElementsByClassName("cursor")[0];
     if (element) {
       element.scrollIntoView({
         behavior: "smooth",
@@ -72,7 +84,6 @@ watch(cursorPosition, () => {
       });
     }
   }, 10);
-
 });
 
 onMounted(() => {
@@ -80,6 +91,7 @@ onMounted(() => {
 });
 const goparent = () => {
   path.value = path.value.slice(0, path.value.lastIndexOf("/"));
+  cursorStore.resetCursor();
 };
 
 const isCursor = (index: number) => {
@@ -90,10 +102,13 @@ const isCursor = (index: number) => {
 };
 
 const isSelected = (index: number) => {
-  return selectedfiles.value.includes(index)? "selected" : "";
+  return selectedfiles.value.includes(index) ? "selected" : "";
 };
+
 defineExpose({
   key_select,
+  update,
+  goparent,
 });
 </script>
 
@@ -103,15 +118,13 @@ defineExpose({
     <button @click="dirlist">get</button>
     <v-card>
       <v-list density="compact" lines="one">
-        <v-list-item @click="goparent()" :class="isCursor(0)">
+        <v-list-item :class="isCursor(0)">
           <v-list-item-content>../</v-list-item-content>
         </v-list-item>
         <v-list-item
           v-for="(item, index) in dir_list"
           :key="item"
           :class="`${isSelected(index + 1)} ${isCursor(index + 1)} `"
-          @click="update"
-          @keydown="key_select"
           :prepend-icon="item.is_dir ? 'mdi-folder' : 'mdi-file'"
         >
           <v-list-item-content>{{ item.file_name }}</v-list-item-content>
@@ -127,7 +140,7 @@ defineExpose({
 <style lang="scss" scoped>
 .selected {
   background-color: rgba(100, 255, 100, 0.3);
-} 
+}
 .cursor {
   background-color: #c0c0c0;
 }

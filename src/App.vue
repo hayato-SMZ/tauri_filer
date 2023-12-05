@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted,ref } from "vue";
+import { onMounted, ref } from "vue";
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import FilerWindow from "./components/FilerWindow.vue";
@@ -15,9 +15,21 @@ const keydown = (e: any) => {
     selecter.changeWindow(1);
   } else if (e.key == "ArrowLeft") {
     selecter.changeWindow(0);
+  } else if (e.key == "Backspace") {
+    if (selecter.getWindow == 0) {
+      console.log("window0ref");
+      window0Ref.value?.goparent();
+    } else {
+      window1Ref.value?.goparent();
+    }
+  } else if (e.key == "Enter") {
+    if (selecter.getWindow == 0) {
+      console.log("window0ref");
+      window0Ref.value?.update();
+    } else {
+      window1Ref.value?.update();
+    }
   } else if (e.key == " ") {
-    console.log("space");
-    console.log(selecter.getCursor);
     if (selecter.getCursor < 1) {
       return;
     }
@@ -39,14 +51,14 @@ const window1Ref = ref<InstanceType<typeof FilerWindow> | null>(null);
 
 <template>
   <v-app>
-    <v-main >
+    <v-main>
       <v-container>
         <v-row>
           <v-col>
-            <FilerWindow :windowid="0" ref="window0Ref"/>
+            <FilerWindow :windowid="0" ref="window0Ref" />
           </v-col>
           <v-col>
-            <FilerWindow :windowid="1" ref="window1Ref"/>
+            <FilerWindow :windowid="1" ref="window1Ref" />
           </v-col>
         </v-row>
       </v-container>

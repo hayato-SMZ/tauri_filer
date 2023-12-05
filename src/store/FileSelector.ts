@@ -11,6 +11,10 @@ export const useFileSelectorStore = defineStore("fileSelector", {
     getCursor: (state) => state.cursor,
   },
   actions: {
+    // cursorをリセット
+    resetCursor() {
+      this.cursor = 0;
+    },
     // cursorをアップ（上に移動）
     upCursor() {
       if (this.cursor > 0) {
