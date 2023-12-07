@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, defineProps, defineExpose } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { open } from "@tauri-apps/api/dialog";
 import { computed } from "vue";
 import { useFileSelectorStore } from "../store/FileSelector";
 
@@ -25,8 +26,9 @@ const dirlist = () => {
       const res_item = res as any[];
       list.value = res_item.filter((item: any) => item.is_dir) as any[];
       list.value = list.value.concat(
-        res_item.filter((item: any) => !item.is_file) as any[]
+        res_item.filter((item: any) => !item.is_dir) as any[]
       );
+      console.log(list.value);
       cursorStore.setFileCounter(props.windowid, list.value.length);
       selectedfiles.value = [];
     })
@@ -41,7 +43,6 @@ const dir_list = computed(() => {
   return list.value.filter((item: any) => item.is_dir);
 });
 const key_select = () => {
-  console.log("keydown: " + props.windowid + " " + cursorPosition.value);
   if (selectedfiles.value.includes(cursorPosition.value)) {
     selectedfiles.value = selectedfiles.value.filter(
       (item: number) => item != cursorPosition.value
@@ -49,7 +50,6 @@ const key_select = () => {
   } else {
     selectedfiles.value.push(cursorPosition.value);
   }
-  console.log(selectedfiles.value);
 };
 const file_list = computed(() => {
   return list.value.filter((item: any) => !item.is_dir);
@@ -68,7 +68,14 @@ const update = () => {
 
     // dirlist();
   } else {
-    invoke("openfile", { path: path.value + "/" + item.file_name });
+    // open file
+    invoke("openfile", { path: path.value + "/" + item.file_name })
+      .then((res: unknown) => {
+        console.log(res);
+      })
+      .catch((err: string) => {
+        console.log(err);
+      });
   }
 };
 watch(path, dirlist);
@@ -122,15 +129,21 @@ defineExpose({
           <v-list-item-content>../</v-list-item-content>
         </v-list-item>
         <v-list-item
-          v-for="(item, index) in dir_list"
+          v-for="(item, dirIndex) in dir_list"
           :key="item"
-          :class="`${isSelected(index + 1)} ${isCursor(index + 1)} `"
+          :class="`${isSelected(dirIndex + 1)} ${isCursor(dirIndex + 1)} `"
           :prepend-icon="item.is_dir ? 'mdi-folder' : 'mdi-file'"
         >
           <v-list-item-content>{{ item.file_name }}</v-list-item-content>
         </v-list-item>
-        <v-list-item v-for="item in file_list" :key="item">
-          <v-list-item-content>{{ item.file_name }}</v-list-item-content>
+        <v-list-item
+          v-for="(file, fileIndex) in file_list"
+          :key="file"
+          :class="`${isSelected(fileIndex + dir_list.length + 1)} ${isCursor(
+            fileIndex + dir_list.length + 1
+          )} `"
+        >
+          <v-list-item-content> {{ file.file_name }}</v-list-item-content>
         </v-list-item>
       </v-list>
     </v-card>
