@@ -25,7 +25,8 @@ pub struct DirEntryInfo {
 // ファイルを開く
 pub fn open_file(path: String) -> Result<String, String> {
     // ファイルを開く
-    let file = fs::read_to_string(&path);
+    let buf = PathBuf::from(&path);
+    let file = fs::read_to_string(buf);
     // ファイルを開けなかったらエラーを返す
     if file.is_err() {
         return Err(format!("failed to open file: {}", path));
