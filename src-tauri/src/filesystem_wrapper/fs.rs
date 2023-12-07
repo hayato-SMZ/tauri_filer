@@ -10,7 +10,7 @@ use std::fs;
 use std::path::PathBuf;
 
 // DirEntryの情報と、そのDireEntryのプロパティを保持する構造体
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct DirEntryInfo {
     pub full_path: String,
     pub is_dir: bool,
@@ -20,6 +20,18 @@ pub struct DirEntryInfo {
     pub file_size: u64,
     pub file_type: String,     // ファイルの種類
     pub file_modified: String, // ファイルの更新日時
+}
+
+// ファイルを開く
+pub fn open_file(path: String) -> Result<String, String> {
+    // ファイルを開く
+    let file = fs::read_to_string(&path);
+    // ファイルを開けなかったらエラーを返す
+    if file.is_err() {
+        return Err(format!("failed to open file: {}", path));
+    }
+    // ファイルを開けたら、そのファイルの中身を返す
+    Ok(file.unwrap())
 }
 
 pub fn get_dir_entries(path: String) -> Result<Vec<DirEntryInfo>, String> {
@@ -42,7 +54,6 @@ pub fn get_dir_entries(path: String) -> Result<Vec<DirEntryInfo>, String> {
                 let metadata = entry.metadata().unwrap();
                 let file_name = entry.file_name().into_string().unwrap();
                 let full_path = entry.path().to_str().unwrap().to_string();
-                println!("{:?} is dir?? {:?}", full_path, metadata.is_dir());
                 let file_type = if metadata.is_dir() {
                     "directory".to_string()
                 } else if metadata.is_file() {
@@ -75,6 +86,7 @@ pub fn get_dir_entries(path: String) -> Result<Vec<DirEntryInfo>, String> {
             entry
         })
         .collect::<Result<Vec<_>, _>>()?;
+    println!("{:?}", entries);
     // ファイルとディレクトリの一覧を返す
     Ok(entries)
 }

@@ -22,6 +22,16 @@ fn rootdir(path: &str) -> Result<Vec<DirEntryInfo>, String> {
     }
 }
 
+#[tauri::command]
+fn openfile(path: &str) -> Result<String, String> {
+    let result = filesystem_wrapper::fs::open_file(path.to_string());
+    if result.is_err() {
+        Err(result.err().unwrap())
+    } else {
+        Ok(result.unwrap())
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -33,7 +43,7 @@ fn main() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, rootdir])
+        .invoke_handler(tauri::generate_handler![greet, rootdir, openfile])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
