@@ -5,6 +5,7 @@
 
 // Pathの文字列が渡されたら、そのディレクトリのファイルとディレクトリの一覧を返す
 // この関数はsrc-tauri/src/main.rsのgreet関数から呼び出される
+use opener;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -26,13 +27,12 @@ pub struct DirEntryInfo {
 pub fn open_file(path: String) -> Result<String, String> {
     // ファイルを開く
     let buf = PathBuf::from(&path);
-    let file = fs::read_to_string(buf);
-    // ファイルを開けなかったらエラーを返す
-    if file.is_err() {
+    // ファイルを開けたら、そのファイルの中身を返す
+    let result = opener::open(&buf);
+    if result.is_err() {
         return Err(format!("failed to open file: {}", path));
     }
-    // ファイルを開けたら、そのファイルの中身を返す
-    Ok(file.unwrap())
+    Ok("open file".to_string())
 }
 
 pub fn get_dir_entries(path: String) -> Result<Vec<DirEntryInfo>, String> {
