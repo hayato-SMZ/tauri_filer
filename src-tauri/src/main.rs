@@ -32,6 +32,27 @@ fn openfile(path: &str) -> Result<String, String> {
     }
 }
 
+#[tauri::command]
+fn copyfiles(paths: Vec<String>, to: String) -> Result<String, String> {
+    let mut result = Ok("".to_string());
+    for path in paths {
+        let basename = std::path::Path::new(&path)
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap();
+        result = filesystem_wrapper::fs::copy_file(path.clone(), format!("{}/{}", to, basename));
+        if result.is_err() {
+            break;
+        }
+    }
+    if result.is_err() {
+        Err(result.err().unwrap())
+    } else {
+        Ok(result.unwrap())
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -43,7 +64,9 @@ fn main() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, rootdir, openfile])
+        .invoke_handler(tauri::generate_handler![
+            greet, rootdir, openfile, copyfiles
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

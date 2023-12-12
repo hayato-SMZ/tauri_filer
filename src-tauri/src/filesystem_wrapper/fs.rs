@@ -35,6 +35,27 @@ pub fn open_file(path: String) -> Result<String, String> {
     Ok("open file".to_string())
 }
 
+// ファイルをコピーする
+pub fn copy_file(src: String, dst: String) -> Result<String, String> {
+    // ファイルをコピーする
+    let result = fs::copy(&src, &dst);
+    if result.is_err() {
+        return Err(format!("failed to copy file: {}", src));
+    }
+    Ok("copy file".to_string())
+}
+
+// ファイルを移動する
+pub fn move_file(src: String, dst: String) -> Result<String, String> {
+    // ファイルを移動する
+    let result = fs::rename(&src, &dst);
+    if result.is_err() {
+        return Err(format!("failed to move file: {}", src));
+    }
+    Ok("move file".to_string())
+}
+
+// ディレクトリの一覧を取得
 pub fn get_dir_entries(path: String) -> Result<Vec<DirEntryInfo>, String> {
     // Pathの文字列をPathBufに変換
     let path = PathBuf::from(path);
