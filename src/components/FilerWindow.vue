@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, defineProps, defineExpose } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
-import { open } from "@tauri-apps/api/dialog";
 import { computed } from "vue";
 import { useFileSelectorStore } from "../store/FileSelector";
 
@@ -65,10 +64,7 @@ const update = () => {
   if (item.is_dir) {
     path.value += "/" + item.file_name.replace(/\n|\/n/, "");
     cursorStore.resetCursor();
-
-    // dirlist();
   } else {
-    // open file
     invoke("openfile", { path: path.value + "/" + item.file_name })
       .then((res: unknown) => {
         console.log(res);
@@ -112,10 +108,22 @@ const isSelected = (index: number) => {
   return selectedfiles.value.includes(index) ? "selected" : "";
 };
 
+const getSelectList = () => {
+  return selectedfiles.value.map(
+    (item) => path.value + "/" + list.value[item - 1].file_name
+  );
+};
+
+const getPath = () => {
+  return path.value;
+};
+
 defineExpose({
   key_select,
   update,
   goparent,
+  getSelectList,
+  getPath,
 });
 </script>
 

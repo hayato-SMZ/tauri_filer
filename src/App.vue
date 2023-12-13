@@ -4,6 +4,8 @@ import { onMounted, ref } from "vue";
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import FilerWindow from "./components/FilerWindow.vue";
 import { useFileSelectorStore } from "./store/fileSelector";
+import { invoke } from "@tauri-apps/api";
+
 const selecter = useFileSelectorStore();
 const keydown = (e: any) => {
   console.log(e.key);
@@ -17,14 +19,29 @@ const keydown = (e: any) => {
     selecter.changeWindow(0);
   } else if (e.key == "Backspace") {
     if (selecter.getWindow == 0) {
-      console.log("window0ref");
       window0Ref.value?.goparent();
     } else {
       window1Ref.value?.goparent();
     }
+  } else if (e.key == "c") {
+    const selectList = (
+      selecter.getWindow == 0
+        ? window0Ref.value?.getSelectList()
+        : window1Ref.value?.getSelectList()
+    ) as any[];
+    const targetPath =
+      selecter.getWindow == 0
+        ? window1Ref.value?.getPath()
+        : window0Ref.value?.getPath();
+    invoke("copyfiles", { paths: selectList, to: targetPath })
+      .then((res: unknown) => {
+        console.log(res);
+      })
+      .catch((err: string) => {
+        console.log(err);
+      });
   } else if (e.key == "Enter") {
     if (selecter.getWindow == 0) {
-      console.log("window0ref");
       window0Ref.value?.update();
     } else {
       window1Ref.value?.update();
@@ -34,7 +51,6 @@ const keydown = (e: any) => {
       return;
     }
     if (selecter.getWindow == 0) {
-      console.log("window0ref");
       window0Ref.value?.key_select();
     } else {
       window1Ref.value?.key_select();

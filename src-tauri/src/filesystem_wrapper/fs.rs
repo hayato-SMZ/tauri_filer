@@ -27,6 +27,7 @@ pub struct DirEntryInfo {
 pub fn open_file(path: String) -> Result<String, String> {
     // ファイルを開く
     let buf = PathBuf::from(&path);
+
     // ファイルを開けたら、そのファイルの中身を返す
     let result = opener::open(&buf);
     if result.is_err() {
@@ -37,10 +38,12 @@ pub fn open_file(path: String) -> Result<String, String> {
 
 // ファイルをコピーする
 pub fn copy_file(src: String, dst: String) -> Result<String, String> {
+    let from_path = PathBuf::from(&src);
+    println!("{:?} -> {:?}", &from_path, &dst);
     // ファイルをコピーする
-    let result = fs::copy(&src, &dst);
+    let result = fs::copy(from_path, &dst);
     if result.is_err() {
-        return Err(format!("failed to copy file: {}", src));
+        return Err(format!("failed to copy file: {} {:?}", src, result.err()));
     }
     Ok("copy file".to_string())
 }
