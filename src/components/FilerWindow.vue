@@ -124,6 +124,7 @@ defineExpose({
   goparent,
   getSelectList,
   getPath,
+  dirlist,
 });
 </script>
 

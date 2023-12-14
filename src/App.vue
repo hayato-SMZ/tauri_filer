@@ -36,6 +36,8 @@ const keydown = (e: any) => {
     invoke("copyfiles", { paths: selectList, to: targetPath })
       .then((res: unknown) => {
         console.log(res);
+        window0Ref.value?.dirlist();
+        window1Ref.value?.dirlist();
       })
       .catch((err: string) => {
         console.log(err);
